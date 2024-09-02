@@ -1,0 +1,78 @@
+﻿@model groove_music.ViewModels.EditAlbumViewModel
+
+<h2>Edit Album</h2>
+
+<form asp-action="EditAlbum" method="post">
+    <input type="hidden" asp-for="Album.AlbumId" />
+    <input type="hidden" asp-for="Album.userId" />
+    <div class="form-group">
+        <label asp-for="Album.AlbumName"></label>
+        <input asp-for="Album.AlbumName" class="form-control" />
+        <span asp-validation-for="Album.AlbumName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumYear"></label>
+        <input asp-for="Album.AlbumYear" class="form-control" />
+        <span asp-validation-for="Album.AlbumYear" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumGenre"></label>
+        <input asp-for="Album.AlbumGenre" class="form-control" />
+        <span asp-validation-for="Album.AlbumGenre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumCover"></label>
+        <input asp-for="Album.AlbumCover" class="form-control" />
+        <span asp-validation-for="Album.AlbumCover" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.Stock"></label>
+        <input asp-for="Album.Stock" class="form-control" />
+        <span asp-validation-for="Album.Stock" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumPrice"></label>
+        <input asp-for="Album.AlbumPrice" class="form-control" />
+        <span asp-validation-for="Album.AlbumPrice" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ArtistId">Artist</label>
+        <select asp-for="ArtistId" class="form-control" asp-items="@(new SelectList(Model.Artists, "ArtistId", "ArtistName", Model.Album.ArtistId))"></select>
+        <span asp-validation-for="ArtistId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<h3>Musics</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Music Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model?.Musics == null || !Model.Musics.Any())
+        {
+            <tr>
+                <td colspan="2">No musics available</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var music in Model.Musics)
+            {
+                <tr>
+                    <td>@music.MusicName</td>
+                    <td>
+                        <form asp-action="DeleteMusic" method="post" style="display:inline;">
+                            <input type="hidden" name="musicId" value="@music.MusicId" />
+                            <input type="hidden" name="albumId" value="@Model.Album.AlbumId" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

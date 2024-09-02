@@ -1,0 +1,41 @@
+﻿@model IEnumerable<groove_music.Models.Albums>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row mt-md-6">
+    <div class="col-md-12">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search for albums, artists, or music..." id="searchString" />
+        </div>
+    </div>
+</div>
+
+<section>
+    <h2>Albums</h2>
+    <div id="albumsContainer">
+        <partial name="_MusicsPartial" model="Model" />
+    </div>
+</section>
+
+@section Scripts { 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#searchString').on('input', function () {
+                searchAlbums();
+            });
+        });
+
+        function searchAlbums() {
+            var searchString = $('#searchString').val();
+            $.ajax({
+                url: '@Url.Action("Search", "Home")',
+                data: { searchString: searchString },
+                success: function (result) {
+                    $('#albumsContainer').html(result);
+                }
+            });
+        }
+    </script>
+}

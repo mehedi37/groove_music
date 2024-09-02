@@ -1,0 +1,40 @@
+﻿@model groove_music.ViewModels.AddAlbumViewModel
+
+<form asp-action="AddAlbum" method="post">
+    <div class="form-group">
+        <label asp-for="Album.ArtistId">Artist</label>
+        <select asp-for="Album.ArtistId" class="form-control" asp-items="@(new SelectList(Model.Artists, "ArtistId", "ArtistName"))"></select>
+        <span asp-validation-for="Album.ArtistId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumName"></label>
+        <input asp-for="Album.AlbumName" class="form-control" />
+        <span asp-validation-for="Album.AlbumName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumYear"></label>
+        <input asp-for="Album.AlbumYear" class="form-control" />
+        <span asp-validation-for="Album.AlbumYear" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumGenre"></label>
+        <input asp-for="Album.AlbumGenre" class="form-control" />
+        <span asp-validation-for="Album.AlbumGenre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumCover"></label>
+        <input asp-for="Album.AlbumCover" class="form-control" />
+        <span asp-validation-for="Album.AlbumCover" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.Stock"></label>
+        <input asp-for="Album.Stock" class="form-control" />
+        <span asp-validation-for="Album.Stock" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Album.AlbumPrice"></label>
+        <input asp-for="Album.AlbumPrice" class="form-control" />
+        <span asp-validation-for="Album.AlbumPrice" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Album</button>
+</form>

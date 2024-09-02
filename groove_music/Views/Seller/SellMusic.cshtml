@@ -1,0 +1,79 @@
+﻿@model groove_music.ViewModels.SellerViewModel
+
+@{
+    ViewData["Title"] = "Sell Music";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="sell-details-tab" data-toggle="tab" href="#sell-details" role="tab" aria-controls="sell-details" aria-selected="true">Sell Details</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="add-artist-tab" data-toggle="tab" href="#add-artist" role="tab" aria-controls="add-artist" aria-selected="false">Add Artist</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="add-album-tab" data-toggle="tab" href="#add-album" role="tab" aria-controls="add-album" aria-selected="false">Add Album</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="add-music-tab" data-toggle="tab" href="#add-music" role="tab" aria-controls="add-music" aria-selected="false">Add Music</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="albums-for-sell-tab" data-toggle="tab" href="#albums-for-sell" role="tab" aria-controls="albums-for-sell" aria-selected="false">Albums For Sell</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="sell-details" role="tabpanel" aria-labelledby="sell-details-tab">
+            <h2>Sell Details</h2>
+            @if (Model.Customers != null && Model.Customers.Any())
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Total Spent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model.Customers)
+                        {
+                            <tr>
+                                <td>@customer.CustomerName</td>
+                                <td>@customer.TotalSpent.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No customer details found.</p>
+            }
+        </div>
+        <div class="tab-pane fade" id="add-artist" role="tabpanel" aria-labelledby="add-artist-tab">
+            @await Html.PartialAsync("_AddArtistPartial", new groove_music.Models.Artists { ArtistId = 0, ArtistName = string.Empty })
+        </div>
+        <div class="tab-pane fade" id="add-album" role="tabpanel" aria-labelledby="add-album-tab">
+            @await Html.PartialAsync("_AddAlbumPartial", new groove_music.ViewModels.AddAlbumViewModel { Artists = Model.Artists })
+        </div>
+        <div class="tab-pane fade" id="add-music" role="tabpanel" aria-labelledby="add-music-tab">
+            @await Html.PartialAsync("_AddMusicPartial", new groove_music.ViewModels.AddMusicViewModel { Albums = Model.Albums })
+        </div>
+        <div class="tab-pane fade" id="albums-for-sell" role="tabpanel" aria-labelledby="albums-for-sell-tab">
+            @await Html.PartialAsync("_AlbumsForSell", Model)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#myTab a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+        });
+    </script>
+}

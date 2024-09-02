@@ -1,0 +1,27 @@
+﻿@model groove_music.ViewModels.SellerViewModel
+
+<h2>Your Albums</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Album Name</th>
+            <th>Year</th>
+            <th>Genre</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var album in Model.ItemsForSale)
+        {
+            <tr>
+                <td>@album.AlbumName</td>
+                <td>@album.AlbumYear</td>
+                <td>@album.AlbumGenre</td>
+                <td>
+                    <a asp-action="EditAlbum" asp-route-id="@album.AlbumId" class="btn btn-warning">Edit</a>
+                    <a asp-action="DeleteAlbum" asp-route-id="@album.AlbumId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

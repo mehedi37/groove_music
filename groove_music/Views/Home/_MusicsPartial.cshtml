@@ -1,0 +1,37 @@
+﻿@model IEnumerable<groove_music.Models.Albums>
+
+<div class="row">
+    @foreach (var album in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <a href="@Url.Action("AlbumDetails", "Seller", new { id = album.AlbumId })">
+                    <img src="@album.AlbumCover" class="card-img-top" width="70" height="250" alt="@album.AlbumName">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="@Url.Action("AlbumDetails", "Seller", new { id = album.AlbumId })">@album.AlbumName</a>
+                    </h5>
+                    <p class="card-text">
+                        <strong>Artist:</strong> @album.Artists?.ArtistName<br />
+                        <strong>Year:</strong> @album.AlbumYear<br />
+                        <strong>Genre:</strong> @album.AlbumGenre
+                    </p>
+                    <p class="card-text"><strong>Price: @album.AlbumPrice.ToString("C")</strong></p>
+                    @if (album.Stock > 0)
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="albumId" value="@album.AlbumId" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn text-white" style="background-color: #9800FF;">Add to Cart</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger card-text" disabled>Stock Out</button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
