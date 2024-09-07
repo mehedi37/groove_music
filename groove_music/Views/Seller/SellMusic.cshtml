@@ -53,7 +53,7 @@
             }
         </div>
         <div class="tab-pane fade" id="add-artist" role="tabpanel" aria-labelledby="add-artist-tab">
-            @await Html.PartialAsync("_AddArtistPartial", new groove_music.Models.Artists { ArtistId = 0, ArtistName = string.Empty })
+            @await Html.PartialAsync("_AddArtistPartial", new groove_music.ViewModels.AddArtistViewModel { })
         </div>
         <div class="tab-pane fade" id="add-album" role="tabpanel" aria-labelledby="add-album-tab">
             @await Html.PartialAsync("_AddAlbumPartial", new groove_music.ViewModels.AddAlbumViewModel { Artists = Model.Artists })

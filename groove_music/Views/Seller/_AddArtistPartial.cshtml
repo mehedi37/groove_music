@@ -1,10 +1,10 @@
-﻿@model groove_music.Models.Artists
+﻿@model groove_music.ViewModels.AddArtistViewModel
 
 <form asp-action="AddArtist" method="post">
     <div class="form-group">
-        <label asp-for="ArtistName"></label>
-        <input asp-for="ArtistName" class="form-control" />
-        <span asp-validation-for="ArtistName" class="text-danger"></span>
+        <label asp-for="Artist.ArtistName"></label>
+        <input asp-for="Artist.ArtistName" class="form-control" />
+        <span asp-validation-for="Artist.ArtistName" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Add Artist</button>
 </form>

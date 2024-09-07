@@ -50,11 +50,39 @@ namespace groove_music.Controllers
         }
 
         [HttpPost]
+        public IActionResult AddArtist(AddArtistViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_context.Artists.Any(a => a.ArtistName == model.Artist.ArtistName.Trim()))
+                {
+                    ModelState.AddModelError("Artist.ArtistName", "Artist already exists.");
+                    return PartialView("_AddArtistPartial", model);
+                }
+                else if (string.IsNullOrEmpty(model.Artist.ArtistName))
+                {
+                    ModelState.AddModelError("Artist.ArtistName", "Artist name cannot be empty.");
+                    return PartialView("_AddArtistPartial", model);
+                }
+                model.Artist.ArtistName = model.Artist.ArtistName.Trim();
+                _context.Artists.Add(model.Artist);
+                _context.SaveChanges();
+                return RedirectToAction("SellMusic");
+            }
+            return PartialView("_AddArtistPartial", model);
+        }
+
+        [HttpPost]
         public IActionResult AddAlbum(AddAlbumViewModel model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
+                if (_context.Albums.Any(a => a.AlbumName == model.Album.AlbumName.Trim()))
+                {
+                    ModelState.AddModelError("Album.AlbumName", "Album already exists.");
+                    return View("_AddAlbumPartial", model);
+                }
                 model.Album.userId = userId;
                 _context.Albums.Add(model.Album);
                 _context.SaveChanges();
