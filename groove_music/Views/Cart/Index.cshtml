@@ -6,6 +6,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 @if (Model == null || Model.CartDetails.Count == 0)
 {
     <p>

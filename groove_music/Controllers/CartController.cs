@@ -24,11 +24,6 @@ namespace groove_music.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
             var cart = await _cartService.GetCartByUserIdAsync(userId);
 
             if (cart == null || !cart.CartItems.Any())
@@ -51,20 +46,33 @@ namespace groove_music.Controllers
         public async Task<IActionResult> AddToCart(int albumId, int quantity = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
             var product = await _context.Albums.FindAsync(albumId);
 
-            if (product == null || product.Stock < quantity)
+            if (product == null)
             {
-                return BadRequest("Insufficient stock or product not found.");
+                TempData["ErrorMessage"] = "Product not found.";
+                return RedirectToAction("Index");
             }
 
-            // Ensure quantity does not exceed stock
-            quantity = Math.Min(quantity, product.Stock);
+            // Retrieve the current cart items for the user
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+            var cartItem = cart?.CartItems.FirstOrDefault(ci => ci.AlbumId == albumId);
+
+            // Calculate the total quantity if the item is already in the cart
+            var totalQuantity = (cartItem?.Quantity ?? 0) + quantity;
+
+            // Ensure the total quantity does not exceed stock
+            if (totalQuantity > product.Stock)
+            {
+                quantity = product.Stock - (cartItem?.Quantity ?? 0);
+                TempData["ErrorMessage"] = "Insufficient stock. Quantity adjusted to available stock.";
+            }
+
+            if (quantity <= 0)
+            {
+                TempData["ErrorMessage"] = "Insufficient stock to add more of this product.";
+                return RedirectToAction("Index");
+            }
 
             await _cartService.AddToCartAsync(userId, albumId, quantity);
             return RedirectToAction("Index");
@@ -93,6 +101,7 @@ namespace groove_music.Controllers
             if (quantity > product.Stock)
             {
                 quantity = product.Stock;
+                TempData["ErrorMessage"] = "Insufficient stock. Quantity adjusted to available stock.";
             }
 
             await _cartService.UpdateCartAsync(cartDetailsId, quantity);
@@ -110,11 +119,6 @@ namespace groove_music.Controllers
         public async Task<IActionResult> ClearCart()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
             await _cartService.ClearCartAsync(userId);
             return RedirectToAction("Index");
         }
@@ -123,11 +127,6 @@ namespace groove_music.Controllers
         public async Task<IActionResult> Purchase()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
             var cart = await _cartService.GetCartByUserIdAsync(userId);
 
             if (cart == null || !cart.CartItems.Any())
