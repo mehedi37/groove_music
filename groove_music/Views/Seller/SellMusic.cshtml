@@ -1,6 +1,7 @@
 ﻿@model groove_music.ViewModels.SellerViewModel
 
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Sell Music";
 }
 
@@ -53,13 +54,13 @@
             }
         </div>
         <div class="tab-pane fade" id="add-artist" role="tabpanel" aria-labelledby="add-artist-tab">
-            @await Html.PartialAsync("_AddArtistPartial", new groove_music.ViewModels.AddArtistViewModel { })
+            @await Html.PartialAsync("AddArtistPartial", new groove_music.ViewModels.AddArtistViewModel { })
         </div>
         <div class="tab-pane fade" id="add-album" role="tabpanel" aria-labelledby="add-album-tab">
-            @await Html.PartialAsync("_AddAlbumPartial", new groove_music.ViewModels.AddAlbumViewModel { Artists = Model.Artists })
+            @await Html.PartialAsync("AddAlbumPartial", new groove_music.ViewModels.AddAlbumViewModel { Artists = Model.Artists })
         </div>
         <div class="tab-pane fade" id="add-music" role="tabpanel" aria-labelledby="add-music-tab">
-            @await Html.PartialAsync("_AddMusicPartial", new groove_music.ViewModels.AddMusicViewModel { Albums = Model.Albums })
+            @await Html.PartialAsync("AddMusicPartial", new groove_music.ViewModels.AddMusicViewModel { Albums = Model.Albums })
         </div>
         <div class="tab-pane fade" id="albums-for-sell" role="tabpanel" aria-labelledby="albums-for-sell-tab">
             @await Html.PartialAsync("_AlbumsForSell", Model)

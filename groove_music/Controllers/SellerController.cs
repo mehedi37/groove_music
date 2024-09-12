@@ -46,6 +46,7 @@ namespace groove_music.Controllers
                 ItemsForSale = await _albumsServices.GetItemsForSaleByUserIdAsync(userId),
                 Customers = await _customerService.GetCustomersBySellerIdAsync(userId)
             };
+            ViewBag.IsPartial = true;
             return View(viewModel);
         }
 
@@ -57,19 +58,22 @@ namespace groove_music.Controllers
                 if (_context.Artists.Any(a => a.ArtistName == model.Artist.ArtistName.Trim()))
                 {
                     ModelState.AddModelError("Artist.ArtistName", "Artist already exists.");
-                    return PartialView("_AddArtistPartial", model);
+                    ViewBag.IsPartial = false;
+                    return PartialView("AddArtistPartial", model);
                 }
                 else if (string.IsNullOrEmpty(model.Artist.ArtistName))
                 {
                     ModelState.AddModelError("Artist.ArtistName", "Artist name cannot be empty.");
-                    return PartialView("_AddArtistPartial", model);
+                    ViewBag.IsPartial = false;
+                    return PartialView("AddArtistPartial", model);
                 }
                 model.Artist.ArtistName = model.Artist.ArtistName.Trim();
                 _context.Artists.Add(model.Artist);
                 _context.SaveChanges();
                 return RedirectToAction("SellMusic");
             }
-            return PartialView("_AddArtistPartial", model);
+            ViewBag.IsPartial = false;
+            return PartialView("AddArtistPartial", model);
         }
 
         [HttpPost]
@@ -81,7 +85,9 @@ namespace groove_music.Controllers
                 if (_context.Albums.Any(a => a.AlbumName == model.Album.AlbumName.Trim()))
                 {
                     ModelState.AddModelError("Album.AlbumName", "Album already exists.");
-                    return View("_AddAlbumPartial", model);
+                    model.Artists = _context.Artists.ToList();
+                    ViewBag.IsPartial = false;
+                    return PartialView("AddAlbumPartial", model);
                 }
                 model.Album.userId = userId;
                 _context.Albums.Add(model.Album);
@@ -89,9 +95,9 @@ namespace groove_music.Controllers
                 return RedirectToAction("SellMusic");
             }
             model.Artists = _context.Artists.ToList();
-            return View("_AddAlbumPartial", model);
+            ViewBag.IsPartial = false;
+            return PartialView("AddAlbumPartial", model);
         }
-
 
         [HttpPost]
         public IActionResult AddMusic(AddMusicViewModel model)
@@ -99,14 +105,21 @@ namespace groove_music.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
+                if (_context.Musics.Any(m => m.MusicName == model.Music.MusicName.Trim() && m.AlbumId == model.Music.AlbumId))
+                {
+                    ModelState.AddModelError("Music.MusicName", "Music already exists in this album.");
+                    model.Albums = _context.Albums.ToList();
+                    ViewBag.IsPartial = false;
+                    return PartialView("AddMusicPartial", model);
+                }
                 _context.Musics.Add(model.Music);
                 _context.SaveChanges();
                 return RedirectToAction("SellMusic");
             }
             model.Albums = _context.Albums.ToList();
-            return View("_AddMusicPartial", model);
+            ViewBag.IsPartial = false;
+            return PartialView("AddMusicPartial", model);
         }
-
 
         public IActionResult EditAlbum(int id)
         {
@@ -130,8 +143,6 @@ namespace groove_music.Controllers
 
             return View(viewModel);
         }
-
-
 
         [HttpPost]
         public IActionResult EditAlbum(EditAlbumViewModel model)
@@ -163,9 +174,6 @@ namespace groove_music.Controllers
             model.Musics = _context.Musics.Where(m => m.AlbumId == model.Album.AlbumId).ToList(); // Ensure Musics is initialized
             return View(model);
         }
-
-
-
 
         public IActionResult DeleteAlbum(int id)
         {
@@ -221,7 +229,5 @@ namespace groove_music.Controllers
 
             return View(viewModel);
         }
-
-
     }
 }

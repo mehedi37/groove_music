@@ -1,5 +1,13 @@
 ﻿@model groove_music.ViewModels.AddAlbumViewModel
 
+@{
+    if (ViewBag.IsPartial == null || !(bool)ViewBag.IsPartial)
+    {
+        Layout = "_Layout";
+    }
+    ViewData["Title"] = "Add Album";
+}
+
 <form asp-action="AddAlbum" method="post">
     <div class="form-group">
         <label asp-for="Album.ArtistId">Artist</label>

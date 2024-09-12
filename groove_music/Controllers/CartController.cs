@@ -24,6 +24,11 @@ namespace groove_music.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var cart = await _cartService.GetCartByUserIdAsync(userId);
 
             if (cart == null || !cart.CartItems.Any())
@@ -42,17 +47,24 @@ namespace groove_music.Controllers
             return View(cartViewModel);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> AddToCart(int albumId, int quantity = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var product = await _context.Albums.FindAsync(albumId);
 
             if (product == null || product.Stock < quantity)
             {
                 return BadRequest("Insufficient stock or product not found.");
             }
+
+            // Ensure quantity does not exceed stock
+            quantity = Math.Min(quantity, product.Stock);
 
             await _cartService.AddToCartAsync(userId, albumId, quantity);
             return RedirectToAction("Index");
@@ -66,14 +78,20 @@ namespace groove_music.Controllers
                 quantity = 1;
             }
 
-            // Retrieve the product from the database
             var cartDetail = await _context.CartItems.FindAsync(cartDetailsId);
-            var product = await _context.Albums.FindAsync(cartDetail.AlbumId);
+            if (cartDetail == null)
+            {
+                return NotFound("Cart item not found.");
+            }
 
-            // Check if the quantity is greater than the product's stock
+            var product = await _context.Albums.FindAsync(cartDetail.AlbumId);
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+
             if (quantity > product.Stock)
             {
-                // Set the quantity to the product's stock
                 quantity = product.Stock;
             }
 
@@ -87,17 +105,29 @@ namespace groove_music.Controllers
             await _cartService.RemoveFromCartAsync(cartDetailsId);
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public async Task<IActionResult> ClearCart()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             await _cartService.ClearCartAsync(userId);
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public async Task<IActionResult> Purchase()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var cart = await _cartService.GetCartByUserIdAsync(userId);
 
             if (cart == null || !cart.CartItems.Any())
@@ -120,6 +150,5 @@ namespace groove_music.Controllers
             await _cartService.PurchaseCartAsync(userId);
             return RedirectToAction("Index");
         }
-
     }
 }
